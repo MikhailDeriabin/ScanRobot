@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{3a6d0614-4b7c-4594-991a-52d589f5f757}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+    someInt1 : INT := 20;
+	someInt2 : INT := 10;
+	result : INT;
+	
+	bigNum : INT;
+	smallNum : INT;
+	
+	isCaluculated : BOOL := FALSE;
+	isCompared : BOOL := FALSE;
+	isIncreased : BOOL := FALSE;
+	
+	//timers
+	//set timer for 3s
+	fbTon : TON := (PT:=T#3S);
+	trigger : BOOL := TRUE;
+	isTimerDone : BOOL := FALSE;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT isCaluculated THEN
+	result := sum(num1 := someInt1, num2 := someInt2);
+	isCaluculated := TRUE;
+END_IF
+
+IF NOT isCompared THEN
+	complicatedFunc(num1:=someInt1, num2:=someInt2, biggerNum=>bigNum, smallerNum=>smallNum);
+	isCompared := TRUE;	
+END_IF
+
+IF NOT isIncreased THEN
+	funcWithReferences(someInt1);
+	isIncreased := TRUE;	
+END_IF
+
+//timers
+//start timer when trigger is true
+fbTon(IN:=trigger);
+isTimerDone := fbTon.Q;]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="67" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="83" Count="3" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="99" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

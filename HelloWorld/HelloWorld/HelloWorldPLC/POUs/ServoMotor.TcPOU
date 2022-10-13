@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="ServoMotor" Id="{3ea56d1d-3e72-4965-be66-010de9455a87}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ServoMotor EXTENDS Motor
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	position : INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="turn90Deg" Id="{022882b8-d2a5-42ab-9b0e-22e69c185fc7}">
+      <Declaration><![CDATA[METHOD turn90Deg
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[position := 90;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ServoMotor">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="ServoMotor.turn90Deg">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

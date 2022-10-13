@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="StructuresAndFunctions" Id="{06824988-815b-4742-af74-335ba82413f9}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM StructuresAndFunctions
+VAR
+	myStruct : MyStruct;
+	
+	age : INT;
+	name : STRING;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[age := myStruct.age;
+name := myStruct.name;]]></ST>
+    </Implementation>
+    <LineIds Name="StructuresAndFunctions">
+      <LineId Id="5" Count="0" />
+      <LineId Id="10" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
