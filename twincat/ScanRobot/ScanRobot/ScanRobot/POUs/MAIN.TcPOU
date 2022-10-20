@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{bcad94f3-26d4-4398-99c6-2ab4d243b808}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	mqtt: MQTT;
+	
+	tonTimer : TON := (PT:=T#10S); //Interval timer for broadcasting.
+	ton1sTimer : TON := (PT:=T#1S);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF _TaskInfo[GETCURTASKINDEXEX()].FirstCycle THEN
+	mqtt.configureMQTTClient();
+END_IF 
+mqtt.connect();
+ 
+mqtt.publishWithTON(timer:=tonTimer, msg:='hi there!');
+mqtt.publishWithTON(timer:=ton1sTimer, msg:='1s');
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="88" Count="4" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="101" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
