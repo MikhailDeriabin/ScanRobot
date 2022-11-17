@@ -1,0 +1,44 @@
+{
+  "name": "@browserify/uglifyify",
+  "version": "6.0.0",
+  "description": "A browserify transform which minifies your code using Terser",
+  "main": "index.js",
+  "dependencies": {
+    "convert-source-map": "^1.9.0",
+    "minimatch": "^3.0.2",
+    "terser": "^5.15.1",
+    "through2": "^4.0.2",
+    "xtend": "^4.0.1"
+  },
+  "devDependencies": {
+    "bl": "^5.0.0",
+    "browserify": "^17.0.0",
+    "from2-string": "^1.1.0",
+    "standard": "^17.0.0",
+    "tap-spec": "^5.0.0",
+    "tape": "^5.6.1",
+    "uglify-js": "^3.17.3",
+    "wrap-stream": "^2.0.0"
+  },
+  "scripts": {
+    "tests-only": "node test | tap-spec",
+    "lint": "standard",
+    "test": "npm run lint && npm run tests-only"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/browserify/uglifyify.git"
+  },
+  "keywords": [
+    "uglify",
+    "minify",
+    "compress",
+    "compile",
+    "browserify",
+    "transform",
+    "stream"
+  ],
+  "author": "Hugh Kennedy <hughskennedy@gmail.com> (http://hughskennedy.com/)",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}

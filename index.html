@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MQTT speed test</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="./node_modules/mqtt/browserMqtt.js"></script>
+</head>
+<body>
+ <section class="controlPanel">
+   <label for="topicInput">Topic: <input id="topicInput" type="text" placeholder="type topic"></label>
+   <button id="startStopButton">Start</button>
+   <span id="statusSpan"></span>
+   <br/>
+   <label for="timerInput">Timer (in s): <input id="timerInput" type="number" placeholder="type measure time"></label>
+   <span id="timerSpan"></span>
+
+   <fieldset>
+     <legend>Test type</legend>
+     <div>
+       <input type="radio" id="counterSpeedTestRadio" name="tests" value="counterSpeedTest" checked>
+       <label for="counterSpeedTestRadio">Counter speed test</label>
+     </div>
+     <div>
+       <input type="radio" id="messageSpeedTestRadio" name="tests" value="messageSpeedTest">
+       <label for="messageSpeedTestRadio">Message speed test</label>
+     </div>
+     <div>
+       <input type="radio" id="capacityTestRadio" name="tests" value="capacityTestTest">
+       <label for="capacityTestRadio">Capacity test</label>
+     </div>
+   </fieldset>
+ </section>
+<section class="resultSection">
+  <table id="totalTable">
+    <tr>
+      <td>Received messages count: </td>
+      <td id="totalReceivedTd"></td>
+    </tr>
+    <tr>
+      <td>Skipped messages count: </td>
+      <td id="totalSkippedTd"></td>
+    </tr>
+    <tr>
+      <td>First message size: </td>
+      <td id="msgSizeTd"></td>
+    </tr>
+  </table>
+  <table id="skippedTable">
+    <tr>
+      <th>Message</th>
+    </tr>
+  </table>
+</section>
+</body>
+<script type="module" src="js/index.js"/>
+</html>

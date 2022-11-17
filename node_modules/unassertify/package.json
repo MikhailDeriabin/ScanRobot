@@ -1,0 +1,71 @@
+{
+  "name": "unassertify",
+  "description": "Browserify transform for unassert: Encourages programming with assertions by providing tools to compile them away",
+  "version": "3.0.1",
+  "author": {
+    "name": "Takuto Wada",
+    "email": "takuto.wada@gmail.com",
+    "url": "https://github.com/twada"
+  },
+  "bugs": "https://github.com/unassert-js/unassertify/issues",
+  "contributors": [
+    {
+      "name": "Renée Kooi",
+      "url": "https://github.com/goto-bus-stop"
+    }
+  ],
+  "dependencies": {
+    "acorn": "^8.0.0",
+    "convert-source-map": "^1.1.1",
+    "escodegen": "^2.0.0",
+    "multi-stage-sourcemap": "^0.3.1",
+    "through": "^2.3.7",
+    "unassert": "^2.0.0"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.0",
+    "coffeeify": "^3.0.0",
+    "coffeescript": "^2.7.0",
+    "event-stream": "^4.0.0",
+    "intelli-espower-loader": "^1.0.1",
+    "mocha": "^10.0.0",
+    "power-assert": "^1.4.1",
+    "semistandard": "^16.0.0",
+    "snazzy": "^9.0.0"
+  },
+  "files": [
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "index.js",
+    "package.json"
+  ],
+  "homepage": "https://github.com/unassert-js/unassertify",
+  "keywords": [
+    "DbC",
+    "unassert",
+    "assert",
+    "assertion",
+    "browserify",
+    "browserify-transform"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/unassert-js/unassertify.git"
+  },
+  "scripts": {
+    "fmt": "semistandard --fix index.js 'test/*.js'",
+    "lint": "semistandard --verbose index.js 'test/*.js' | snazzy",
+    "test": "npm run lint && mocha --require intelli-espower-loader"
+  },
+  "semistandard": {
+    "globals": [
+      "describe",
+      "context",
+      "beforeEach",
+      "it"
+    ]
+  }
+}
