@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="MQTTSettings" Id="{c150fbe4-de94-4c4b-bc27-8cb0c2fadd85}">
+    <Declaration><![CDATA[TYPE MQTTSettings :
+STRUCT
+	//Broker info
+	brokerIP : STRING := '78.27.125.143';
+    brokerPort : UINT := 8885;
+	brokerUsername : STRING := 'scanrobot';
+	brokerPassword : STRING := 'kissa';
+	
+	//Client info
+    clientId : STRING := 'plc';
+	topicPub : STRING := 'beckhoff';
+	topicSub : STRING := 'plc';
+	qos : TcIotMqttQos := TcIotMqttQos.AtMostOnceDelivery;	
+	
+	//TLS info
+	caCertificateAbsolutePath : STRING := 'C:\Users\mikko\Desktop\twincat\certs\ca.crt';
+	clientCertificateAbsolutePath : STRING := 'C:\Users\mikko\Desktop\twincat\certs\client.crt';
+	clientKeyAbsolutePath : STRING := 'C:\Users\mikko\Desktop\twincat\certs\client.key';
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

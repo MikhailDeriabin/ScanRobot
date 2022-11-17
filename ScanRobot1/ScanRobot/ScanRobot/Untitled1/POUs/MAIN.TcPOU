@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MAIN" Id="{bcad94f3-26d4-4398-99c6-2ab4d243b808}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	mqtt: MQTT;
+	
+	tonTimer : TON := (PT:=T#1S); //Interval timer for broadcasting.
+	counter : INT := 0;
+	isPublished : BOOL := FALSE;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF _TaskInfo[GETCURTASKINDEXEX()].FirstCycle THEN
+	mqtt.configureMQTTClient();
+END_IF 
+mqtt.connect();
+
+IF mqtt.isConnected() THEN
+	//Capasity test
+	IF NOT isPublished THEN
+		mqtt.publish(msg := 'this is a very long message for testing mqtt maximum capacity. this is a very lo');
+		isPublished := TRUE;
+	END_IF
+
+	
+	
+    //tonTimer(IN:=TRUE);
+    //IF tonTimer.Q THEN
+		//msg test
+		//mqtt.publish(msg := '{"temperature":345;"motorSpeed":300;"distance":1345;"humidity":58}');
+	
+	
+		//counter test
+		//counter := counter + 1;		
+        //tonTimer(IN:=FALSE);  
+        //mqtt.publish(msg := TO_STRING(counter));
+    //END_IF
+	
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="88" Count="3" />
+      <LineId Id="113" Count="1" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="173" Count="0" />
+      <LineId Id="175" Count="0" />
+      <LineId Id="174" Count="0" />
+      <LineId Id="172" Count="0" />
+      <LineId Id="167" Count="0" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="115" Count="1" />
+      <LineId Id="135" Count="0" />
+      <LineId Id="139" Count="0" />
+      <LineId Id="137" Count="1" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="117" Count="0" />
+      <LineId Id="119" Count="1" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="101" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

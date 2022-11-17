@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MQTT" Id="{084e2c16-6e17-4882-a0a8-7702a58652da}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK MQTT
+VAR_OUTPUT
+	mqttClient : FB_IotMqttClient;
+END_VAR
+VAR
+	mqttSettings : MQTTSettings;
+	messageQueue : FB_IotMqttMessageQueue;
+    message      : FB_IotMqttMessage;
+	isSubscribed : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="configureMQTTClient" Id="{ce1ea2df-a923-4d21-87a8-46741dcdc3e2}">
+      <Declaration><![CDATA[METHOD PUBLIC configureMQTTClient
+VAR_IN_OUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mqttClient.sHostName := mqttSettings.brokerIP;
+mqttClient.nHostPort := mqttSettings.brokerPort;
+mqttClient.sClientId := mqttSettings.clientId;
+mqttClient.sUserName := mqttSettings.brokerUsername;
+mqttClient.sUserPassword := mqttSettings.brokerPassword;
+mqttClient.stTLS.sCA := mqttSettings.caCertificateAbsolutePath;
+mqttClient.stTLS.sCert := mqttSettings.clientCertificateAbsolutePath;
+mqttClient.stTLS.sKeyFile := mqttSettings.clientKeyAbsolutePath;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="connect" Id="{b6465687-d19b-4d36-b73f-19f8f4db6350}">
+      <Declaration><![CDATA[METHOD PUBLIC connect
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mqttClient.Execute(bConnect := TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="isConnected" Id="{0de8943d-e5f2-4149-9af0-81880d38b73f}">
+      <Declaration><![CDATA[METHOD PUBLIC isConnected : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[isConnected := mqttClient.bConnected;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="publish" Id="{902c7888-9fcf-40fa-a097-7caf00046036}">
+      <Declaration><![CDATA[METHOD PUBLIC publish : BOOL
+VAR_INPUT
+	msg : STRING;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mqttClient.Publish(sTopic:= mqttSettings.topicPub,
+            pPayload:= ADR(msg),
+            nPayloadSize:= LEN2(ADR(msg))+1,
+            eQoS:= mqttSettings.qos,
+            bRetain:= FALSE,
+            bQueue:= FALSE
+);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="publishBack" Id="{f66b129b-98e3-4dda-87a8-9e17508aa7fe}">
+      <Declaration><![CDATA[METHOD publishBack : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	receivedTopic : STRING(255);
+	receivedMsg : STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF isConnected() THEN
+	IF NOT isSubscribed THEN
+        isSubscribed := mqttClient.Subscribe(sTopic:=mqttSettings.topicSub, eQoS:=mqttSettings.qos);
+		publish(msg := 'now subscribed!');
+		publish(msg := mqttSettings.topicSub);
+    END_IF	
+
+	IF messageQueue.nQueuedMessages > 0 THEN
+		publish(msg := 'something received');
+		
+		IF messageQueue.Dequeue(fbMessage:=message) THEN
+			message.GetTopic(pTopic:=ADR(receivedTopic), nTopicSize:=SIZEOF(receivedTopic) );
+			message.GetPayload(pPayload:=ADR(receivedMsg), nPayloadSize:=SIZEOF(receivedMsg), bSetNullTermination:=FALSE);
+						
+			publish(msg := receivedTopic);
+			publish(msg := receivedMsg);
+		END_IF
+	END_IF
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="publishWithTON" Id="{6bad3a16-8839-47e6-9fca-79310b296219}">
+      <Declaration><![CDATA[METHOD PUBLIC publishWithTON
+VAR_IN_OUT
+	timer : TON;	
+END_VAR
+VAR_INPUT
+	msg : STRING;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF isConnected() THEN
+    timer(IN:=TRUE);
+    IF timer.Q THEN
+        timer(IN:=FALSE);
+     
+        publish(msg := msg);
+    END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="MQTT">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="MQTT.configureMQTTClient">
+      <LineId Id="6" Count="6" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="MQTT.connect">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="MQTT.isConnected">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="MQTT.publish">
+      <LineId Id="8" Count="4" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="14" Count="0" />
+    </LineIds>
+    <LineIds Name="MQTT.publishBack">
+      <LineId Id="6" Count="7" />
+      <LineId Id="41" Count="1" />
+      <LineId Id="14" Count="3" />
+      <LineId Id="19" Count="2" />
+      <LineId Id="34" Count="1" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="MQTT.publishWithTON">
+      <LineId Id="6" Count="6" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
