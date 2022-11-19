@@ -1,12 +1,15 @@
 const client = mqtt.connect('ws://192.168.50.91:8883');
 
-const topicInput = document.querySelector("#topicInput");
 const timerInput = document.querySelector("#timerInput");
 const timerSpan = document.querySelector("#timerSpan");
 const startStopButton = document.querySelector("#startStopButton");
+const messageInput = document.querySelector("#messageInput");
+const messageSpan = document.querySelector("#messageSpan");
+const testTypeFieldset = document.querySelector("#testTypeFieldset");
 const counterSpeedTestRadio = document.querySelector("#counterSpeedTestRadio");
 const messageSpeedTestRadio = document.querySelector("#messageSpeedTestRadio");
 const capacityTestRadio = document.querySelector("#capacityTestRadio");
+const testTypeRadioButtons = [counterSpeedTestRadio, messageSpeedTestRadio, capacityTestRadio];
 
 const skippedTable = document.querySelector("#skippedTable");
 const totalSkippedId = document.querySelector("#totalSkippedTd");
@@ -14,36 +17,64 @@ const totalReceivedTd = document.querySelector("#totalReceivedTd");
 const msgSizeTd = document.querySelector("#msgSizeTd");
 const statusSpan = document.querySelector("#statusSpan");
 
-let topicToSubscribe = "";
+const counterTestTopic = 'plc/counterTest';
+const messageTestTopic = 'plc/messageTest';
+const capacityTestTopic = 'plc/capacityTest';
+
+let topicToSubscribe = counterTestTopic;
 let isStarted = false;
 
 startStopButton.addEventListener("click", () => {
     if(!isStarted){
         const receivedMessages = [];
-        topicToSubscribe = topicInput.value;
+        isStarted = true;
+        statusSpan.textContent = "Measuring started";
+        startStopButton.textContent = "Stop";
+        startStopButton.style.backgroundColor = "red";
 
-        if(topicToSubscribe !== "" && topicToSubscribe !== undefined){
-            isStarted = true;
-            statusSpan.textContent = "Measuring started";
-            startStopButton.textContent = "Stop";
-            startStopButton.style.backgroundColor = "red";
-
-            client.subscribe(topicToSubscribe);
-
-            client.on("message", function (topic, payload) {
-                receivedMessages.push(payload);
-            });
-
-            let time = parseInt(timerInput.value);
-            if(!isNaN(time) && time > 0){
-                startTimer(time);
-                setTimeout(() => stopMeasuring(receivedMessages), time*1000);
-            }
-        } else{
-            statusSpan.textContent = "Please provide topic";
+        if(capacityTestRadio.checked){
+            const msgToPublish = messageInput.value;
+            if(msgToPublish !== undefined && msgToPublish !== ""){
+                messageSpan.textContent = msgToPublish.length + " chars";
+                client.publish(capacityTestTopic, msgToPublish);
+             }else
+                messageSpan.textContent = "Please provide a message to be sent";
         }
+
+        client.subscribe(topicToSubscribe);
+
+        client.on("message", function (topic, payload) {
+            receivedMessages.push(payload);
+        });
+
+        let time = parseInt(timerInput.value);
+        if(!isNaN(time) && time > 0){
+            startTimer(time);
+            setTimeout(() => stopMeasuring(receivedMessages), time*1000);
+        }
+
     } else{
         stopMeasuring();
+    }
+});
+
+testTypeFieldset.addEventListener("click", ()=>{
+    for(let i=0; i<testTypeRadioButtons.length; i++){
+        if(testTypeRadioButtons[i].checked){
+            switch (testTypeRadioButtons[i].id) {
+                case "counterSpeedTestRadio":
+                    topicToSubscribe = counterTestTopic;
+                    break;
+                case "messageSpeedTestRadio":
+                    topicToSubscribe = messageTestTopic;
+                    break;
+                case "capacityTestRadio":
+                    topicToSubscribe = capacityTestTopic + "/out";
+                    break;
+            }
+
+            break;
+        }
     }
 });
 

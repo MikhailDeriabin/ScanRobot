@@ -8,14 +8,16 @@
 </head>
 <body>
  <section class="controlPanel">
-   <label for="topicInput">Topic: <input id="topicInput" type="text" placeholder="type topic"></label>
    <button id="startStopButton">Start</button>
    <span id="statusSpan"></span>
    <br/>
    <label for="timerInput">Timer (in s): <input id="timerInput" type="number" placeholder="type measure time"></label>
    <span id="timerSpan"></span>
+   <br/>
+   <label for="messageInput">Message: <input id="messageInput" type="text" placeholder="type message"></label>
+   <span id="messageSpan"></span>
 
-   <fieldset>
+   <fieldset id="testTypeFieldset">
      <legend>Test type</legend>
      <div>
        <input type="radio" id="counterSpeedTestRadio" name="tests" value="counterSpeedTest" checked>
