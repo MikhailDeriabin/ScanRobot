@@ -12,7 +12,7 @@ client.subscribe(servoTopic + "/out");
 setAngleButton.addEventListener("click", ()=>{
     angleInputSpan.textContent = "";
 
-   const angleToSet =  angleInput.value;
+   const angleToSet = angleInput.value;
    if(angleToSet !== undefined && angleToSet !== ""){
         const angleInt = parseInt(angleToSet);
         if(angleInt < 0)
