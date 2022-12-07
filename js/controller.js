@@ -4,10 +4,13 @@ const angleInput = document.querySelector("#angleInput");
 const setAngleButton = document.querySelector("#setAngleButton");
 const angleInputSpan = document.querySelector("#angleInputSpan");
 const currentAngleSpan = document.querySelector("#currentAngleSpan");
+const currentSpeedSpan = document.querySelector("#currentSpeedSpan");
 
-const servoTopic = "plc/servo";
+const servoAngleTopic = "plc/servo/angle";
+const servoSpeedTopic = "plc/servo/speed/out";
 
-client.subscribe(servoTopic + "/out");
+client.subscribe(servoAngleTopic + "/out");
+client.subscribe(servoSpeedTopic);
 
 setAngleButton.addEventListener("click", ()=>{
     angleInputSpan.textContent = "";
@@ -20,12 +23,15 @@ setAngleButton.addEventListener("click", ()=>{
         else if(angleInt > 360)
             angleInputSpan.textContent = "angle should be less than 360(0-360)";
         else
-            client.publish(servoTopic, angleToSet);
+            client.publish(servoAngleTopic, angleToSet);
    } else
        angleInputSpan.textContent = "please provide an angle(0-360)";
 });
 
 client.on("message", function (topic, payload){
-    if(topic === (servoTopic + "/out"))
+    if(topic === (servoAngleTopic + "/out"))
         currentAngleSpan.textContent = payload.toString();
+
+    if(topic === servoSpeedTopic)
+        currentSpeedSpan.textContent = payload.toString();
 });
