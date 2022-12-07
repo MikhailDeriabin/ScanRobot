@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MAIN" Id="{bcad94f3-26d4-4398-99c6-2ab4d243b808}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	mqtt: MQTT;
+	//mqttTest: MQTTTest;
+
+	angleTimer : TON := (PT:=T#1S);
+	speedTimer : TON := (PT:=T#10MS);
+	tonTimerCounter : TON := (PT:=T#100MS);
+	tonTimerMessage : TON := (PT:=T#100MS);
+	
+	servo : Servo;
+	angle : INT;
+	
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF _TaskInfo[GETCURTASKINDEXEX()].FirstCycle THEN
+	mqtt.configureMQTTClient();
+END_IF 
+mqtt.connect();
+
+servo.waitForCommand(mqtt := mqtt);
+servo.publishAngle(mqtt := mqtt, timer := angleTimer);
+servo.publishSpeed(mqtt := mqtt, timer := speedTimer);
+
+//mqttTest.counterTest(tonTimer:=tonTimerCounter, mqtt:=mqtt);
+//mqttTest.messageTest(tonTimer:=tonTimerMessage, mqtt:=mqtt, msg:='some fixed msg');
+//mqttTest.capacityTest(mqtt:=mqtt);]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="88" Count="3" />
+      <LineId Id="133" Count="1" />
+      <LineId Id="150" Count="0" />
+      <LineId Id="163" Count="0" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="122" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

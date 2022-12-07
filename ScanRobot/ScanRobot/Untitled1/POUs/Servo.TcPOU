@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="Servo" Id="{8e476ada-403f-4aab-b2d0-f33c8df5abc6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Servo
+VAR
+	mqttSettings : MQTTSettings;	
+
+	currentSpeed : INT;
+	currentAngle : INT;
+	
+	servoAngleCommandTopic : STRING := 'plc/servo/angle';
+	servoAngleOutTopic : STRING := 'plc/servo/angle/out';
+	servoSpeedOutTopic : STRING := 'plc/servo/speed/out';
+	isSubscribed : BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="getAngle" Id="{fcf94f04-c45b-4525-965b-43b1879cd6c3}">
+      <Declaration><![CDATA[METHOD getAngle : INT
+VAR_OUTPUT
+	angle : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[angle := currentAngle;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="publishAngle" Id="{90aeb0ea-dcee-414a-9650-a99ab35755f5}">
+      <Declaration><![CDATA[METHOD publishAngle
+VAR_IN_OUT
+	mqtt: MQTT;	
+	timer : TON;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF mqtt.isConnected() THEN
+    timer(IN:=TRUE);
+    IF timer.Q THEN
+        timer(IN:=FALSE);
+        mqtt.publishToTopic(topic := servoAngleOutTopic, msg := INT_TO_STRING(currentAngle));
+    END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="publishSpeed" Id="{ad9a4890-ffc5-45db-960e-ecf23fd083a0}">
+      <Declaration><![CDATA[METHOD publishSpeed
+VAR_IN_OUT
+	mqtt: MQTT;	
+	timer : TON;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF mqtt.isConnected() THEN
+    timer(IN:=TRUE);
+    IF timer.Q THEN
+        timer(IN:=FALSE);
+        mqtt.publishToTopic(topic := servoSpeedOutTopic, msg := INT_TO_STRING(currentSpeed));
+    END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="setAngle" Id="{efa850a3-5964-414f-b9ff-7d6606d6fd36}">
+      <Declaration><![CDATA[METHOD setAngle : BOOL
+VAR_INPUT
+	angleToSet : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[currentAngle := angleToSet;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="waitForCommand" Id="{a3edf7ce-7614-4fe1-bb56-cf52d65bc955}">
+      <Declaration><![CDATA[METHOD waitForCommand
+VAR_IN_OUT
+	mqtt: MQTT;	
+END_VAR
+VAR
+	receivedMsg : STRING(255);
+	
+	angleToSet : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF mqtt.isConnected() THEN
+	IF NOT isSubscribed THEN
+        isSubscribed := mqtt.mqttClient.Subscribe(sTopic:=servoAngleCommandTopic, eQoS:=mqttSettings.qos);
+    END_IF	
+
+	IF mqtt.messageQueue.nQueuedMessages > 0 THEN	
+		IF mqtt.messageQueue.Dequeue(fbMessage:=mqtt.message) THEN
+			IF mqtt.message.CompareTopic(sTopic:=servoAngleCommandTopic) THEN	
+	
+				mqtt.message.GetPayload(pPayload:=ADR(receivedMsg), nPayloadSize:=SIZEOF(receivedMsg), bSetNullTermination:=FALSE);				
+				angleToSet := STRING_TO_INT(receivedMsg);
+				IF (angleToSet >= 0 AND angleToSet <= 360) THEN
+					setAngle(angleToSet := angleToSet);
+				END_IF
+			
+			END_IF
+		END_IF
+	END_IF
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Servo">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="Servo.getAngle">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Servo.publishAngle">
+      <LineId Id="6" Count="3" />
+      <LineId Id="13" Count="1" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Servo.publishSpeed">
+      <LineId Id="10" Count="5" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Servo.setAngle">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Servo.waitForCommand">
+      <LineId Id="11" Count="10" />
+      <LineId Id="29" Count="2" />
+      <LineId Id="22" Count="4" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

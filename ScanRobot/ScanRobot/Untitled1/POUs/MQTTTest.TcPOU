@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MQTTTest" Id="{78009fea-0e28-4735-9cb1-2c5df1329c66}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK MQTTTest
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	mqttSettings : MQTTSettings;
+
+	counterTestTopic : STRING := 'plc/counterTest';
+	messageTestTopic : STRING := 'plc/messageTest';
+	capacityTestTopic : STRING := 'plc/capacityTest';
+	
+	counter : INT := 0;
+	isSubscribed : BOOL := false;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="capacityTest" Id="{3d3b23db-d539-41c6-a4a1-50f9a1dd6897}">
+      <Declaration><![CDATA[METHOD capacityTest : BOOL
+VAR_IN_OUT
+	mqtt: MQTT;	
+END_VAR
+VAR
+	receivedMsg : STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF mqtt.isConnected() THEN
+	IF NOT isSubscribed THEN
+        isSubscribed := mqtt.mqttClient.Subscribe(sTopic:=capacityTestTopic, eQoS:=mqttSettings.qos);
+    END_IF	
+
+	IF mqtt.messageQueue.nQueuedMessages > 0 THEN	
+		IF mqtt.messageQueue.Dequeue(fbMessage:=mqtt.message) THEN
+			IF mqtt.message.CompareTopic(sTopic:=capacityTestTopic) THEN	
+	
+				mqtt.message.GetPayload(pPayload:=ADR(receivedMsg), nPayloadSize:=SIZEOF(receivedMsg), bSetNullTermination:=FALSE);				
+				mqtt.publishToTopic(topic:=CONCAT(capacityTestTopic, '/out'), msg := receivedMsg);
+			
+			END_IF
+		END_IF
+	END_IF
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="counterTest" Id="{c3993a34-51db-4f61-9bc0-2603f18e549b}">
+      <Declaration><![CDATA[METHOD PUBLIC counterTest
+VAR_IN_OUT
+	tonTimer : TON;
+	mqtt: MQTT;	
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF mqtt.isConnected() THEN
+	tonTimer(IN:=TRUE);
+	IF tonTimer.Q THEN
+		tonTimer(IN:=FALSE);
+		counter := counter + 1;			  
+		mqtt.publishToTopic(msg:=TO_STRING(counter), topic:=counterTestTopic);
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="messageTest" Id="{93aaced8-137b-4daf-8b56-c5c7e8c731d7}">
+      <Declaration><![CDATA[METHOD messageTest : BOOL
+VAR_IN_OUT
+	tonTimer : TON;
+	mqtt : MQTT;	
+	
+END_VAR
+VAR_INPUT
+	msg : STRING;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF mqtt.isConnected() THEN	
+	
+    tonTimer(IN:=TRUE);
+    IF tonTimer.Q THEN
+		mqtt.publishToTopic(msg:=msg, topic:=messageTestTopic);			
+        tonTimer(IN:=FALSE);  
+    END_IF
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="MQTTTest">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="MQTTTest.capacityTest">
+      <LineId Id="9" Count="15" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="MQTTTest.counterTest">
+      <LineId Id="12" Count="6" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="MQTTTest.messageTest">
+      <LineId Id="9" Count="7" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
